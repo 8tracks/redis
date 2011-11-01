@@ -478,6 +478,16 @@ start_server {tags {"zset"}} {
             assert_equal {a 2 b 7 d 9 c 12} [r zrange zsetc 0 -1 withscores]
         }
 
+        test "ZUNIONSTORE with exponents - $encoding" {
+            assert_equal 4 [r zunionstore zsetc 2 zseta zsetb exponents 2 3]
+            assert_equal {a 1 b 5 c 17 d 27} [r zrange zsetc 0 -1 withscores]
+        }
+
+        test "ZUNIONSTORE with exponents, weights and AGGREGATE MULT - $encoding" {
+            assert_equal 4 [r zunionstore zsetc 2 zseta zsetb aggregate mult weights 3 2 exponents 2 3]
+            assert_equal {a 3 b 24 d 54 c 432} [r zrange zsetc 0 -1 withscores]
+        }
+
         test "ZUNIONSTORE with a regular set and weights - $encoding" {
             r del seta
             r sadd seta a
@@ -506,6 +516,16 @@ start_server {tags {"zset"}} {
         test "ZINTERSTORE with weights - $encoding" {
             assert_equal 2 [r zinterstore zsetc 2 zseta zsetb weights 2 3]
             assert_equal {b 7 c 12} [r zrange zsetc 0 -1 withscores]
+        }
+
+        test "ZINTERSTORE with exponents - $encoding" {
+            assert_equal 2 [r zinterstore zsetc 2 zseta zsetb exponents 2 3]
+            assert_equal {b 5 c 17} [r zrange zsetc 0 -1 withscores]
+        }
+
+        test "ZINTERSTORE with exponents, weights and AGGREGATE MULT - $encoding" {
+            assert_equal 2 [r zinterstore zsetc 2 zseta zsetb aggregate mult weights 3 2 exponents 2 3]
+            assert_equal {b 24 c 432} [r zrange zsetc 0 -1 withscores]
         }
 
         test "ZINTERSTORE with a regular set and weights - $encoding" {
