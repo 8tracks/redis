@@ -820,16 +820,6 @@ int expireIfNeeded(redisDb *db, robj *key) {
      * See issue #1525 on Github for more information. */
     now = server.lua_caller ? server.lua_time_start : mstime();
 
-    /* If we are running in the context of a slave, return ASAP:
-     * the slave key expiration is controlled by the master that will
-     * send us synthesized DEL operations for expired keys.
-     *
-     * Still we try to return the right information to the caller,
-     * that is, 0 if we think the key should be still valid, 1 if
-     * we think the key is expired at this time. */
-    if (server.masterhost != NULL) return now > when;
-
-    /* Return when this key has not expired */
     if (now <= when) return 0;
 
     /* Delete the key */
